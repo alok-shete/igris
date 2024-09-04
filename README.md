@@ -29,22 +29,26 @@ yarn add igris
 
 ```tsx
 import React from 'react';
-import { useAStore, createStore } from 'igris';
+import { createStore, createState } from 'igris';
+
+// **Store Example**
 
 // Create a new instance of the store with initial state and actions
-
-const counterStore = createStore(
-  { count: 0 }, // Initial state
-  (setState, getState) => ({
-    // Callback function to generate actions
-    increment: () => setState({ count: getState().count + 1 }), // Action to increment count
-    decrement: () => setState({ count: getState().count - 1 }), // Action to decrement count
+export const useCount = createStore(
+  { count: 0 },
+  ({ set, get }) => ({
+    increment: () => {
+      set({ count: get().count + 1 });
+    },
+    decrement: () => {
+      set({ count: get().count - 1 });
+    },
   })
 );
 
-//without selector
+// Without selector
 const CounterComponent = () => {
-  const { count, decrement, increment } = useAStore(counterStore);
+  const { count, decrement, increment } = useCount();
 
   return (
     <div>
@@ -55,9 +59,9 @@ const CounterComponent = () => {
   );
 };
 
-//with selector get state
+// With selector to get state
 const CountDisplayComponent = () => {
-  const count = useAStore(counterStore, (state) => state.count);
+  const count = useCount((state) => state.count);
 
   return (
     <div>
@@ -66,12 +70,10 @@ const CountDisplayComponent = () => {
   );
 };
 
-//with selector get actions
+// With selector to get actions
 const CountActionsComponent = () => {
-
-  const increment = useAStore(counterStore, (state) => state.increment);
-  const decrement = useAStore(counterStore, (state) => state.decrement);
-   
+  const increment = useCount((state) => state.increment);
+  const decrement = useCount((state) => state.decrement);
 
   return (
     <div>
@@ -81,6 +83,21 @@ const CountActionsComponent = () => {
   );
 };
 
+// **State Example**
+
+export const useDarkTheme = createState(true);
+
+const ThemeComponent = () => {
+  const [isDark, setDark] = useDarkTheme();
+
+  return (
+    <div>
+      <p>Current Theme: {isDark ? 'Dark' : 'Light'}</p>
+      <button onClick={() => setDark(true)}>DARK</button>
+      <button onClick={() => setDark(false)}>LIGHT</button>
+    </div>
+  );
+}
 ```
 
 ## Documentation
@@ -95,4 +112,4 @@ Please consider donating if you think HTTPtestify is helpful to you or that my w
 
 ## License
 
-This project is licensed under the<a href = "https://github.com/alok-shete/igris/blob/main/LICENSE" target="_blank">MIT License</a>
+This project is licensed under the <a href = "https://github.com/alok-shete/igris/blob/main/LICENSE" target="_blank">MIT License</a>
