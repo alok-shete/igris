@@ -1,7 +1,10 @@
-import { useAState } from "../hooks/useAState";
+import { useDebugValue, useCallback, useEffect, useRef } from "react";
+import useSyncExternalStoreExports from "use-sync-external-store/shim/with-selector.js";
 import { isObject, shallowMerge } from "../utils/functions";
-import { AnyType, StateHook, StoreConfig } from "../utils/types";
+import { AnyType, SetStateCallback, StateHook, StoreConfig, StoreHook } from "../utils/types";
 import { IgrisMaster } from "./master";
+
+const { useSyncExternalStoreWithSelector } = useSyncExternalStoreExports;
 
 /**
  * Represents a state management class extending IgrisMaster.
@@ -23,7 +26,7 @@ export class IgrisState<T> extends IgrisMaster<T> {
     if (this.persist?.config && !this.persist.config.merge) {
       this.persist.config.merge = (currentState, storeState) => {
         if (isObject(storeState) && isObject(currentState)) {
-          return shallowMerge(currentState as AnyType, storeState as Object,);
+          return shallowMerge(currentState as AnyType, storeState as Object);
         } else {
           return storeState;
         }
@@ -94,4 +97,60 @@ export const createState = <T>(
   hook.set = state.set;
   hook.getServerState = state.getServerState;
   return hook as StateHook<T>;
+};
+
+/**
+ * Custom React hook for managing state updates and subscriptions.
+ * @param state - State object or hook implementing state management interface.
+ * @returns A tuple containing the selected state and a setter function.
+ *
+ * @template T - Type of the state managed by IgrisState, IStateHook, or IStoreHook.
+ *
+ *   @example
+ * ```tsx
+ * // Using the hook with a store instance
+ * const Component = () => {
+ *   const [selectedState, setState] = useAState(state);
+ *   // Use selectedState and setState in the component
+ * };
+ * ```
+ */
+
+
+
+export const useAState = <T>(
+  state: IgrisState<T> | StateHook<T> | StoreHook<T, AnyType>
+): [T, (value: React.SetStateAction<T>, cb?: SetStateCallback<T>) => void] => {
+  const cbQueueRef = useRef<SetStateCallback<T>[]>([]);
+  const selectedState = useSyncExternalStoreWithSelector(
+    state.subscribe,
+    state.get,
+    state.getServerState,
+    (state) => state
+  );
+  useDebugValue(selectedState);
+
+  const setStateAndCallback = useCallback(
+    (value: React.SetStateAction<T>, cb?: SetStateCallback<T>) => {
+      if (cb) {
+        cbQueueRef.current.push(cb);
+      }
+      state.set(value);
+    },
+    [state]
+  );
+
+  useEffect(() => {
+    if (cbQueueRef.current.length > 0) {
+      const queue = [...cbQueueRef.current];
+      cbQueueRef.current.length = 0;
+      for (const fn of queue) {
+        if (typeof fn === "function") {
+          fn(selectedState);
+        }
+      }
+    }
+  }, [selectedState]);
+
+  return [selectedState, setStateAndCallback];
 };

@@ -6,26 +6,11 @@ import {
   WrappedComponentType,
 } from "./types";
 
-/**
- * Checks if a given function name starts with a specified string.
- */
-export const checkStartString = (functionName: string, startString: string) =>
-  functionName.startsWith(startString);
-
-/**
- * Determines whether a given value is a Promise.
- */
 export const isPromise = <T>(value: unknown): value is Promise<T> =>
   value instanceof Promise;
 
-/**
- * Checks if a given value is an array.
- */
 export const isArray = <T>(value: T) => Array.isArray(value);
 
-/**
- * Checks if a given item is a non-null object (excluding arrays).
- */
 export const isObject = <T>(item: T) =>
   (item && typeof item === "object" && !Array.isArray(item)) || false;
 

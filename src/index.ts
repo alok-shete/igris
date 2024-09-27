@@ -1,12 +1,10 @@
-import { useAStore } from "./hooks/useAStore";
-import { useAState } from "./hooks/useAState";
-import { IgrisStore, createStore } from "./core/store";
-import { IgrisState, createState } from "./core/state";
-import { withConnect } from "./hoc/withConnect";
+import { IgrisStore, createStore, useAStore } from "./core/store";
+import { IgrisState, createState, useAState } from "./core/state";
+import { withConnect } from "./core/withConnect";
 import { deepMerge, shallowMerge } from "./utils/functions";
 import {
   StateListener,
-  PersistConfig,
+  PersistConfig, //todo
   StoreConfig,
   ActualStorage,
   WithConnectProps,

@@ -1,4 +1,5 @@
-import { useAStore } from "../hooks/useAStore";
+import { useDebugValue } from "react";
+import useSyncExternalStoreExports from "use-sync-external-store/shim/with-selector.js";
 import {
   AnyType,
   ActionsCallback,
@@ -6,6 +7,9 @@ import {
   StoreHook,
 } from "../utils/types";
 import { IgrisMaster } from "./master";
+
+const { useSyncExternalStoreWithSelector } = useSyncExternalStoreExports;
+
 
 /**
  * Represents a value management store with actions and optional persistence.
@@ -78,7 +82,7 @@ export class IgrisStore<
  *   ({set, get}) => ({
  *     increment: () => set((prevState) => ({ ...prevState, count: prevState.count + 1 })),
  *   }),
- *   { name: "AppState", persist: { enable: true } }
+ *   { name: "AppState", persist: enablePersist() }
  * );
  *
  * // Example component using the created store hook
@@ -112,4 +116,54 @@ export const createStore = <
   hook.set = store.set;
   hook.getServerState = store.getServerState;
   return hook as StoreHook<T, R>;
+};
+
+/**
+ * Custom hook for integrating a store with React components.
+ *
+ * This hook allows React components to subscribe to a store and automatically update
+ * when the store state changes. It also provides support for selecting specific parts
+ * of the store state and actions using a selector function.
+ *
+ * @param store - The store instance to integrate with the component.
+ * @param selector - Optional selector function to derive a subset of state and actions.
+ * @returns The selected state or the entire store state and actions based on the provided selector.
+ *
+ * @template T - Type of the store's state.
+ * @template R - Type of the store's actions.
+ * @template S - Type of the selected state.
+ *
+ * @example
+ * ```tsx
+ * // Using the hook with a store instance
+ * const Component = () => {
+ *   const selectedState = useAStore(store);
+ *   // Use selectedState in the component
+ * };
+ * ```
+ */
+
+export const useAStore = <
+  T extends Record<AnyType, AnyType> = Record<AnyType, AnyType>,
+  R extends Record<AnyType, AnyType> = Record<AnyType, AnyType>,
+  S = T & R,
+>(
+  store: IgrisStore<T, R> | StoreHook<T, R>,
+  selector: (state: T & R) => S = (state) => state
+): S => {
+  function getStateWithSelector(state: T) {
+    return selector({ ...state, ...store.actions });
+  }
+
+  const selectedState = useSyncExternalStoreWithSelector(
+    store.subscribe,
+    store.get,
+    store.getServerState,
+    getStateWithSelector,
+    undefined
+  );
+
+  useDebugValue(selectedState);
+
+  return selectedState;
 };

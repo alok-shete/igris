@@ -26,27 +26,27 @@ export type StateListener<T> = (state: T) => void;
  */
 export type StoreConfig<T> =
   | {
-    /**
-     * Optional persistence configuration. If omitted, persistence is not enabled.
-     */
-    persist?: undefined;
+      /**
+       * Optional persistence configuration. If omitted, persistence is not enabled.
+       */
+      persist?: undefined;
 
-    /**
-     * Optional name of the store. Can be used for identification purposes.
-     */
-    name?: string;
-  }
+      /**
+       * Optional name of the store. Can be used for identification purposes.
+       */
+      name?: string;
+    }
   | {
-    /**
-     * Persistence configuration. When provided, the store state will be persisted.
-     */
-    persist: (storeName: string, store: IgrisMaster<T>) => PersistHandler<T>;
+      /**
+       * Persistence configuration. When provided, the store state will be persisted.
+       */
+      persist: (storeName: string, store: IgrisMaster<T>) => PersistHandler<T>;
 
-    /**
-     * Name of the store. Must be provided if persistence is enabled.
-     */
-    name: string;
-  };
+      /**
+       * Name of the store. Must be provided if persistence is enabled.
+       */
+      name: string;
+    };
 
 export interface PersistConfig<T> {
   /**
@@ -280,10 +280,10 @@ export type WithConnectProps<
 
 export type DeepPartial<T> =
   T extends Record<string, any>
-  ? {
-    [K in keyof T]?: DeepPartial<T[K]>;
-  }
-  : T;
+    ? {
+        [K in keyof T]?: DeepPartial<T[K]>;
+      }
+    : T;
 
 export type WrappedComponentType<P extends Record<string, any>, Ref = never> =
   | ComponentType<P>
@@ -291,19 +291,19 @@ export type WrappedComponentType<P extends Record<string, any>, Ref = never> =
 
 export type HydratorOption =
   | {
-    handler: () => void | Promise<void>;
-    stores: undefined;
-    config?: undefined;
-    loadingComponent?: React.ReactNode | React.ReactNode[];
-  }
+      handler: () => void | Promise<void>;
+      stores: undefined;
+      config?: undefined;
+      loadingComponent?: React.ReactNode | React.ReactNode[];
+    }
   | {
-    handler?: undefined;
-    stores: (StateHook<AnyType> | StoreHook<AnyType, AnyType>)[];
-    config?: {
-      storage?: StorageProvider;
+      handler?: undefined;
+      stores: (StateHook<AnyType> | StoreHook<AnyType, AnyType>)[];
+      config?: {
+        storage?: StorageProvider;
+      };
+      loadingComponent?: React.ReactNode | React.ReactNode[];
     };
-    loadingComponent?: React.ReactNode | React.ReactNode[];
-  };
 
 export type HydratorProps = HydratorOption & {
   children: React.ReactNode | React.ReactNode[];
@@ -315,3 +315,5 @@ export type SetupHydratorFunction = (
     storage?: StorageProvider | undefined;
   }
 ) => () => void | Promise<void>;
+
+export type SetStateCallback<T> = (state: T) => void | (() => void);

@@ -1,6 +1,6 @@
 {
   "name": "igris",
-  "version": "0.0.3-beta",
+  "version": "1.0.1",
   "description": "A small, simple, and type-safe state management solution for React and React Native.",
   "main": "src/index.ts",
   "module": "src/index.mjs",
@@ -32,14 +32,23 @@
     "ui-test": " vitest --ui",
     "prebuild": "rm -rf dist",
     "test-coverage": "vitest run --coverage",
-    "build": "tsup"
+    "build": "tsup",
+    "publish": "echo 'not allowed to publish'"
   },
   "files": [
     "dist",
     "LICENSE",
     "README.md"
   ],
-  "keywords": [],
+  "keywords": [
+    "state management",
+    "react",
+    "react-native",
+    "athrok",
+    "redux",
+    "zustand",
+    "jotai"
+  ],
   "author": "Alok Shete",
   "license": "MIT",
   "devDependencies": {

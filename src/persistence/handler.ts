@@ -20,7 +20,7 @@ export class PersistHandler<T> {
   private timeoutId: NodeJS.Timeout | undefined;
   private readonly store: IgrisMaster<T>;
   private storage: PersistStorage = new UninitializedStorage();
-  private unsubscribeStore = () => { }
+  private unsubscribeStore = () => { };
 
   config: PartiallyRequired<
     PersistConfig<T>,
@@ -56,29 +56,29 @@ export class PersistHandler<T> {
   }
 
   private subscribeStore = () => {
-    this.unsubscribeStore()
+    this.unsubscribeStore();
     this.unsubscribeStore = this.store.subscribe((data) => {
       this.setItem(data);
     });
-  }
+  };
 
+  //TODO - need to handle hydrate issue
   public hydrate(): void | Promise<void> {
     this.initializeStorage();
     const storedValue = this.getItem();
-    this.subscribeStore()
+
     if (isPromise(storedValue)) {
       const hydratePromise = runImmediately(async () => {
         const resolvedValue = await storedValue;
         this.store.set(resolvedValue as T);
       });
-
       this.hydrate = () => hydratePromise;
-
-      return hydratePromise;
     } else {
-      this.store.currentState = storedValue as T;
+      this.store.set(storedValue as T);
       this.hydrate = () => undefined;
     }
+    this.subscribeStore();
+    return this.hydrate();
   }
 
   /**
@@ -134,7 +134,7 @@ export class PersistHandler<T> {
           version: version,
         });
       } catch (error) {
-        LOG.error("Error setting item", error)
+        LOG.error("Error setting item", error);
       }
     }, this.config.debounceTime);
   }
