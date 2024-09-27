@@ -1,7 +1,13 @@
 import { useDebugValue, useCallback, useEffect, useRef } from "react";
 import useSyncExternalStoreExports from "use-sync-external-store/shim/with-selector.js";
 import { isObject, shallowMerge } from "../utils/functions";
-import { AnyType, SetStateCallback, StateHook, StoreConfig, StoreHook } from "../utils/types";
+import {
+  AnyType,
+  SetStateCallback,
+  StateHook,
+  StoreConfig,
+  StoreHook,
+} from "../utils/types";
 import { IgrisMaster } from "./master";
 
 const { useSyncExternalStoreWithSelector } = useSyncExternalStoreExports;
@@ -115,8 +121,6 @@ export const createState = <T>(
  * };
  * ```
  */
-
-
 
 export const useAState = <T>(
   state: IgrisState<T> | StateHook<T> | StoreHook<T, AnyType>

@@ -20,7 +20,7 @@ export class PersistHandler<T> {
   private timeoutId: NodeJS.Timeout | undefined;
   private readonly store: IgrisMaster<T>;
   private storage: PersistStorage = new UninitializedStorage();
-  private unsubscribeStore = () => { };
+  private unsubscribeStore = () => {};
 
   config: PartiallyRequired<
     PersistConfig<T>,

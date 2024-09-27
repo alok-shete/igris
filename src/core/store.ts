@@ -10,7 +10,6 @@ import { IgrisMaster } from "./master";
 
 const { useSyncExternalStoreWithSelector } = useSyncExternalStoreExports;
 
-
 /**
  * Represents a value management store with actions and optional persistence.
  *
