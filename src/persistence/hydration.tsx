@@ -49,7 +49,7 @@ export const setupHydrator = (
 };
 
 export const Hydrator: React.FC<HydratorProps> = (props) => {
-  const promiseRef = useRef<void | Promise<void>>(undefined);
+  const promiseRef = useRef<void | Promise<void> | null>(undefined);
   const hydrationStateRef = useRef({ isHydrated: false });
 
   const isHydrated = useSyncExternalStoreWithSelector(
@@ -63,13 +63,12 @@ export const Hydrator: React.FC<HydratorProps> = (props) => {
       return () => {};
     },
     () => {
-      if (promiseRef.current == undefined) {
+      if (promiseRef.current === undefined) {
         if (props.handler) {
-          promiseRef.current = props.handler();
+          promiseRef.current = props.handler() ?? null;
         } else {
-          promiseRef.current = runImmediately(
-            setupHydrator(props.stores, props.config)
-          );
+          promiseRef.current =
+            runImmediately(setupHydrator(props.stores, props.config)) ?? null;
         }
 
         if (!(promiseRef.current instanceof Promise)) {

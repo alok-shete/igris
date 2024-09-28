@@ -3,6 +3,7 @@ import useSyncExternalStoreExports from "use-sync-external-store/shim/with-selec
 import { isObject, shallowMerge } from "../utils/functions";
 import {
   AnyType,
+  DeepPartial,
   SetStateCallback,
   StateHook,
   StoreConfig,
@@ -32,7 +33,10 @@ export class IgrisState<T> extends IgrisMaster<T> {
     if (this.persist?.config && !this.persist.config.merge) {
       this.persist.config.merge = (currentState, storeState) => {
         if (isObject(storeState) && isObject(currentState)) {
-          return shallowMerge(currentState as AnyType, storeState as Object);
+          return shallowMerge(
+            currentState as AnyType,
+            storeState as Object
+          ) as DeepPartial<T>;
         } else {
           return storeState;
         }

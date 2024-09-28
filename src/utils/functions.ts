@@ -20,7 +20,7 @@ export const isObject = <T>(item: T) =>
  * @returns A new object with properties from all input objects shallow merged.
  */
 export const shallowMerge = <T extends object = Record<string, AnyType>>(
-  ...objects: T[]
+  ...objects: object[]
 ) => objects.reduce((prev, cur) => ({ ...prev, ...cur }), {} as T);
 
 /**
@@ -30,7 +30,7 @@ export const shallowMerge = <T extends object = Record<string, AnyType>>(
  * @returns A new object with properties from all input objects deeply merged.
  */
 export const deepMerge = <T extends object = Record<string, AnyType>>(
-  target: T,
+  target: object,
   ...sources: object[]
 ): T => {
   const merge = (target: AnyType, source: AnyType): AnyType => {
@@ -107,8 +107,8 @@ export function createJSONStorage(
     if (str === null) return null;
     try {
       return JSON.parse(str);
-    } catch {
-      //TODO - need to add log
+    } catch (error) {
+      LOG.error("Failed to parse JSON string:", str, error);
       return null;
     }
   };

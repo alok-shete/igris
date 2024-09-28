@@ -62,7 +62,6 @@ export class PersistHandler<T> {
     });
   };
 
-  //TODO - need to handle hydrate issue
   public hydrate(): void | Promise<void> {
     this.initializeStorage();
     const storedValue = this.getItem();
@@ -114,7 +113,10 @@ export class PersistHandler<T> {
     }
 
     const mergeFunction = this.config.merge ?? shallowMerge;
-    return mergeFunction(this.store.currentState as AnyType, processedData);
+    return mergeFunction(
+      this.store.currentState as AnyType,
+      processedData as AnyType
+    ) as T; //TODO - need validate this type
   }
 
   /**

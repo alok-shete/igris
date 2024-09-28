@@ -292,20 +292,19 @@ export type WrappedComponentType<P extends Record<string, any>, Ref = never> =
 export type HydratorOption =
   | {
       handler: () => void | Promise<void>;
-      stores: undefined;
-      config?: undefined;
-      loadingComponent?: React.ReactNode | React.ReactNode[];
+      stores?: never;
+      config?: never;
     }
   | {
-      handler?: undefined;
+      handler?: never;
       stores: (StateHook<AnyType> | StoreHook<AnyType, AnyType>)[];
-      config?: {
-        storage?: StorageProvider;
-      };
-      loadingComponent?: React.ReactNode | React.ReactNode[];
+      config?: Partial<{
+        storage: StorageProvider;
+      }>;
     };
 
 export type HydratorProps = HydratorOption & {
+  loadingComponent?: React.ReactNode | React.ReactNode[];
   children: React.ReactNode | React.ReactNode[];
 };
 

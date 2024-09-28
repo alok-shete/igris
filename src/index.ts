@@ -4,7 +4,7 @@ import { withConnect } from "./core/withConnect";
 import { deepMerge, shallowMerge } from "./utils/functions";
 import {
   StateListener,
-  PersistConfig, //todo
+  PersistConfig,
   StoreConfig,
   ActualStorage,
   WithConnectProps,
