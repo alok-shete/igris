@@ -166,7 +166,7 @@ describe("Hydrator", () => {
     vi.clearAllMocks();
   });
 
-  it("renders loading component when not hydrated", () => {
+  it("renders loading component when not hydrated", async () => {
     let resolveRef = () => {};
     const { getByText } = render(
       <Hydrator
@@ -181,7 +181,10 @@ describe("Hydrator", () => {
       </Hydrator>
     );
     expect(getByText("Loading...")).toBeInTheDocument();
-    resolveRef();
+    // Resolve the promise to trigger hydration
+    await act(async () => {
+      resolveRef();
+    });
   });
 
   it("renders children when hydrated", () => {
@@ -240,7 +243,6 @@ describe("Hydrator", () => {
     );
 
     expect(getByText("Content")).toBeInTheDocument();
-    console.log(mockHandler.mock.calls);
     expect(mockHandler).toHaveBeenCalledTimes(1);
   });
 
