@@ -247,7 +247,13 @@ export type StateHook<T> = {
   /**
    * Hook function overload: returns a tuple containing state `S` and a dispatch function to update the state.
    */
-  <S = T>(): [S, React.Dispatch<React.SetStateAction<T>>];
+  <S = T>(): [
+    S,
+    (
+      value: React.SetStateAction<T>,
+      cb?: SetStateCallback<T> | undefined
+    ) => void,
+  ];
   /**
    * Returns the current state managed by the hook.
    * @returns The current state.
@@ -294,6 +300,7 @@ export type HydratorOption =
       handler: () => void | Promise<void>;
       stores?: never;
       config?: never;
+      loadingComponent?: React.ReactNode | React.ReactNode[];
     }
   | {
       handler?: never;
@@ -301,10 +308,10 @@ export type HydratorOption =
       config?: Partial<{
         storage: StorageProvider;
       }>;
+      loadingComponent?: React.ReactNode | React.ReactNode[];
     };
 
 export type HydratorProps = HydratorOption & {
-  loadingComponent?: React.ReactNode | React.ReactNode[];
   children: React.ReactNode | React.ReactNode[];
 };
 

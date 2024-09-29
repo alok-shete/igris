@@ -109,7 +109,11 @@ export class PersistHandler<T> {
     let processedData = value as T;
 
     if (this.config.version !== version) {
-      processedData = (this.config.migrate?.(value, version) ?? {}) as T;
+      if (typeof this.config.migrate == "function") {
+        processedData = this.config.migrate(value, version) as T;
+      } else {
+        return this.store.currentState;
+      }
     }
 
     const mergeFunction = this.config.merge ?? shallowMerge;

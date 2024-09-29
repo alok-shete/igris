@@ -1,14 +1,12 @@
 import React, { act } from "react";
-import { createStore } from "../../../src/index";
-import { render, fireEvent, screen, waitFor } from "@testing-library/react";
+import { createState } from "../../../src/index";
+import { render, fireEvent, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { describe, it, expect, vi } from "vitest";
 import { IgrisMaster } from "../../../src/core/master";
-import { AnyType } from "../../../src/utils/types";
 import { PersistHandler, enablePersist } from "../../../src/persistence";
 import {
   createAsyncMock,
-  delay,
   getDataFromStorage,
   removeDataFromStorage,
   setDataToStorage,
@@ -18,31 +16,30 @@ const persistName = "counter";
 const SimpleCounter = (
   persist?: (
     storeName: string,
-    store: IgrisMaster<AnyType>
-  ) => PersistHandler<AnyType>
+    store: IgrisMaster<number>
+  ) => PersistHandler<number>
 ) => {
-  const useCounter = createStore(
-    { count: 0 },
-    ({ set, get }) => ({
-      increment: () => set({ count: get().count + 1 }),
-      decrement: () => set({ count: get().count - 1 }),
-    }),
-    {
-      name: persistName,
-      persist: persist,
-    }
-  );
+  const useCounter = createState(0, {
+    name: persistName,
+    persist: persist,
+  });
 
   // Component using the entire store
   const CounterActions = () => {
-    const { increment, decrement } = useCounter();
+    const [_, setCount] = useCounter();
 
     return (
       <div>
-        <button data-testid="increment-button" onClick={increment}>
+        <button
+          data-testid="increment-button"
+          onClick={() => setCount((count) => count + 1)}
+        >
           Increment
         </button>
-        <button data-testid="decrement-button" onClick={decrement}>
+        <button
+          data-testid="decrement-button"
+          onClick={() => setCount((count) => count - 1)}
+        >
           Decrement
         </button>
       </div>
@@ -50,7 +47,7 @@ const SimpleCounter = (
   };
 
   const DisplayCounter = () => {
-    const count = useCounter((state) => state.count);
+    const [count] = useCounter();
 
     return (
       <div>
@@ -137,14 +134,12 @@ describe("SimpleCounter Sync Persist Integration Tests", () => {
 
     vi.runAllTimers();
     expect(getDataFromStorage(localStorage, persistName)).toStrictEqual({
-      value: {
-        count: 1,
-      },
+      value: 1,
     });
   });
 
   it("initializes count from localStorage if available", () => {
-    setDataToStorage(localStorage, persistName, { count: 5 });
+    setDataToStorage(localStorage, persistName, 5);
     const { CounterApp } = SimpleCounter(enablePersist());
     render(<CounterApp />);
     expect(screen.getByTestId("count-value")).toHaveTextContent("Count: 5");
@@ -174,15 +169,13 @@ describe("SimpleCounter Async Persist Integration Tests", () => {
     fireEvent.click(decrementButton);
     vi.runAllTimers();
     expect(getDataFromStorage(localStorage, persistName)).toStrictEqual({
-      value: {
-        count: 1,
-      },
+      value: 1,
     });
   });
 
   it("initializes count from localStorage if available", async () => {
     const mockAsynStorage = createAsyncMock();
-    setDataToStorage(localStorage, persistName, { count: 5 });
+    setDataToStorage(localStorage, persistName, 5);
     const { CounterApp } = SimpleCounter(
       enablePersist({
         storage: mockAsynStorage,

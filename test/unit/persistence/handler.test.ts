@@ -171,7 +171,6 @@ describe("PersistHandler", () => {
     });
   });
 
-  //TODO - need to check
   it("processes stored data with migration", () => {
     const handler = new PersistHandler("testKey", storeMock, config);
     const data = {
@@ -193,6 +192,67 @@ describe("PersistHandler", () => {
     );
     expect(result).toEqual({
       someMigratedData: "migratedData",
+    });
+  });
+
+  it("processes stored data with default shallow merge", () => {
+    const withoutMigrateConfig = {
+      ...config,
+      merge: undefined,
+    };
+    const newStoreMock = {
+      ...storeMock,
+      currentState: {
+        some: "new",
+      },
+    };
+
+    const handler = new PersistHandler(
+      "testKey",
+      newStoreMock as IgrisMaster<unknown>,
+      withoutMigrateConfig
+    );
+    const data = {
+      value: {
+        some: "data",
+        newData: true,
+      },
+      version: 1,
+    };
+
+    const result = handler["processStoredData"](data);
+
+    expect(result).toEqual({
+      newData: true,
+      some: "data",
+    });
+  });
+  it("ignores migration becouse of migration function not present and version chnaged", () => {
+    const withMergrationConfig = {
+      ...config,
+      migrate: undefined,
+    };
+    const newStoreMock = {
+      ...storeMock,
+      currentState: {
+        some: "new",
+      },
+    };
+    const handler = new PersistHandler(
+      "testKey",
+      newStoreMock as IgrisMaster<unknown>,
+      withMergrationConfig
+    );
+    const data = {
+      value: {
+        some: "old",
+      },
+    };
+
+    const result = handler["processStoredData"](data);
+
+    expect(result).toEqual({
+      some: "new",
     });
   });
 
