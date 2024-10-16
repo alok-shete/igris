@@ -3,8 +3,6 @@
   "version": "1.0.1",
   "description": "A small, simple, and type-safe state management solution for React and React Native.",
   "main": "src/index.ts",
-  "module": "src/index.mjs",
-  "types": "src/index.d.ts",
   "homepage": "https://github.com/alok-shete/igris#readme",
   "publishConfig": {
     "@alok-shete:registry": "https://npm.pkg.github.com"
