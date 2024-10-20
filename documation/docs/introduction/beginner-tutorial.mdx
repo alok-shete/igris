@@ -1,0 +1,149 @@
+---
+sidebar_position: 2
+---
+
+# Beginner Tutorial
+
+In this tutorial, we'll build a simple Todo List application using React and Igris for state management. This will help you understand how to use Igris in a real-world scenario.
+
+## Prerequisites
+
+- Basic knowledge of React
+- Node.js and npm (or yarn) installed on your machine
+
+## Step 1: Set up the project
+
+First, let's create a new React project and install Igris:
+
+```bash
+npx create-react-app igris-todo-app
+cd igris-todo-app
+npm install igris
+```
+
+## Step 2: Create the Igris store
+
+Create a new file called `todoStore.ts` in the `src` folder:
+
+```js title="src/todoStore.ts"
+import { createStore } from 'igris';
+
+export const useTodoStore = createStore(
+  {
+    todos: [],
+  },
+  ({ set, get }) => ({
+    addTodo: (text) => {
+      const newTodo = { id: Date.now(), text, completed: false };
+      set({ todos: [...get().todos, newTodo] });
+    },
+    toggleTodo: (id) => {
+      set({
+        todos: get().todos.map((todo) =>
+          todo.id === id ? { ...todo, completed: !todo.completed } : todo
+        ),
+      });
+    },
+    removeTodo: (id) => {
+      set({
+        todos: get().todos.filter((todo) => todo.id !== id),
+      });
+    },
+  })
+);
+```
+
+This creates a store with the initial state and actions for managing todos.
+
+## Step 3: Create the TodoList component
+
+Create a new file called `TodoList.tsx` in the `src` folder:
+
+```jsx  title="src/TodoList.tsx"
+import React, { useState } from 'react';
+import { useTodoStore } from './todoStore';
+
+export function TodoList() {
+  const [newTodoText, setNewTodoText] = useState('');
+  const { todos, addTodo, toggleTodo, removeTodo } = useTodoStore();
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (newTodoText.trim()) {
+      addTodo(newTodoText);
+      setNewTodoText('');
+    }
+  };
+
+  return (
+    <div>
+      <h1>Todo List</h1>
+      <form onSubmit={handleSubmit}>
+        <input
+          type="text"
+          value={newTodoText}
+          onChange={(e) => setNewTodoText(e.target.value)}
+          placeholder="Add a new todo"
+        />
+        <button type="submit">Add</button>
+      </form>
+      <ul>
+        {todos.map((todo) => (
+          <li key={todo.id}>
+            <input
+              type="checkbox"
+              checked={todo.completed}
+              onChange={() => toggleTodo(todo.id)}
+            />
+            <span style={{ textDecoration: todo.completed ? 'line-through' : 'none' }}>
+              {todo.text}
+            </span>
+            <button onClick={() => removeTodo(todo.id)}>Delete</button>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+```
+
+## Step 4: Update App.tsx
+
+Replace the contents of `src/App.tsx` with:
+
+```jsx  title="src/App.tsx"
+import React from 'react';
+import { TodoList } from './TodoList';
+
+function App() {
+  return (
+    <div className="App">
+      <TodoList />
+    </div>
+  );
+}
+
+export default App;
+```
+
+## Step 5: Run the application
+
+Now you can run your application:
+
+```bash
+npm start
+```
+
+Visit `http://localhost:3000` in your browser to see your Todo List app in action!
+
+## What we've learned
+
+In this tutorial, we've:
+
+1. Set up a new React project with Igris
+2. Created an Igris store to manage our todo list state
+3. Implemented actions to add, toggle, and remove todos
+4. Created a React component that uses the Igris store
+5. Built a functional Todo List application
+
+This example demonstrates how Igris makes it easy to manage state in a React application. The `useTodoStore` hook provides a simple way to access and update the state, while keeping the logic for state updates encapsulated within the store.

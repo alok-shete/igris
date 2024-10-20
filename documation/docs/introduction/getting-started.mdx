@@ -1,0 +1,90 @@
+---
+sidebar_position: 1
+---
+
+# Getting Started
+
+Welcome to Igris, a small, simple, and type-safe state management solution for React and React Native. This guide will help you get started with Igris in your project.
+
+## What is Igris?
+
+Igris is designed to be a lightweight and intuitive state management library that offers efficient data persistence and seamless integration with various storage mechanisms. It's perfect for developers who want to manage application state with ease and confidence.
+
+## Features
+
+- **Simple API:** Easy to integrate and use
+- **Type-safe:** Reduces the risk of runtime errors
+- **Synchronous & Asynchronous Storage:** Flexible options for state management
+- **Efficient Data Persistence:** Reliable state storage across sessions
+- **Customizable Configuration:** Adapt to your application's needs
+- **Seamless Integration:** Compatible with various storage mechanisms
+
+## Installation
+
+You can install Igris using npm or yarn:
+
+```bash
+npm install igris
+```
+
+or
+
+```bash
+yarn add igris
+```
+
+## Basic Usage
+
+Let's look at some basic examples of how to use Igris in your React application.
+
+### Using `createStore`
+
+```tsx
+import React from 'react';
+import { createStore } from 'igris';
+
+// Create a new store with initial state and actions
+export const useCount = createStore(
+  { count: 0 },
+  ({ set, get }) => ({
+    increment: () => set({ count: get().count + 1 }),
+    decrement: () => set({ count: get().count - 1 }),
+  })
+);
+
+// Use the store in a component
+const CounterComponent = () => {
+  const { count, increment, decrement } = useCount();
+
+  return (
+    <div>
+      <p>Count: {count}</p>
+      <button onClick={increment}>Increment</button>
+      <button onClick={decrement}>Decrement</button>
+    </div>
+  );
+};
+```
+
+### Using `createState`
+
+```tsx
+import React from 'react';
+import { createState } from 'igris';
+
+// Create a simple state
+export const useDarkTheme = createState(true);
+
+// Use the state in a component
+const ThemeComponent = () => {
+  const [isDark, setDark] = useDarkTheme();
+
+  return (
+    <div>
+      <p>Current Theme: {isDark ? 'Dark' : 'Light'}</p>
+      <button onClick={() => setDark(true)}>DARK</button>
+      <button onClick={() => setDark(false)}>LIGHT</button>
+    </div>
+  );
+};
+```

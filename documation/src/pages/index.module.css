@@ -1,0 +1,89 @@
+.heroBanner {
+  padding: 4rem 0;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(145deg, var(--ifm-color-primary) 0%, var(--ifm-color-primary-darker) 100%);
+  color: var(--ifm-color-white);
+}
+
+.buttons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.quickStart {
+  background-color: var(--ifm-color-emphasis-100);
+}
+
+.codeBlocks {
+  background: var(--ifm-color-emphasis-200);
+  border-radius: var(--ifm-code-border-radius);
+  padding: 1rem;
+}
+
+.installBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.installBlock code {
+  display: block;
+  padding: 0.5rem;
+  background: var(--ifm-color-emphasis-300);
+  border-radius: var(--ifm-code-border-radius);
+}
+
+.codeExample {
+  background: var(--ifm-color-emphasis-200);
+  border-radius: var(--ifm-code-border-radius);
+  padding: 1rem;
+}
+
+.codeExample pre {
+  margin: 0;
+}
+
+.badges {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  margin: 1rem 0;
+}
+
+.badges img {
+  height: 20px;
+}
+
+.community {
+  background-color: var(--ifm-color-emphasis-100);
+}
+
+.communityIcon {
+  width: 48px;
+  height: 48px;
+  margin-bottom: 1rem;
+  color: var(--ifm-color-primary);
+}
+
+@media screen and (max-width: 996px) {
+  .heroBanner {
+    padding: 2rem;
+  }
+
+  .buttons {
+    flex-direction: column;
+  }
+
+  .quickStart .row {
+    flex-direction: column;
+  }
+
+  .quickStart .col {
+    margin-bottom: 2rem;
+  }
+}
