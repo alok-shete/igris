@@ -3,6 +3,8 @@ import React, {
   ForwardRefExoticComponent,
   PropsWithoutRef,
   RefAttributes,
+  useCallback,
+  useMemo,
   useRef,
 } from "react";
 
@@ -26,67 +28,82 @@ export const setupHydrator = (
     storage?: StorageProvider | undefined;
   }
 ): (() => void | Promise<void>) => {
+  // Create optimized hydration function
   return () => {
-    const results = stores.map((store) => {
-      if (store.persist?.config.storage == undefined) {
-        if (store.persist && config?.storage) {
-          store.persist.config.storage = config.storage;
-        } else {
-          return;
-        }
+    const hydrationPromises: (Promise<void> | void)[] = [];
+
+    // Use for...of loop for better performance with early exits
+    for (const store of stores) {
+      // Skip if store doesn't need hydration
+      if (!store.persist) continue;
+
+      // Configure storage if needed
+      if (store.persist.config.storage === undefined && config?.storage) {
+        store.persist.config.storage = config.storage;
       }
-      store.get();
-      return store.persist?.hydrate();
-    });
-    if (results.some((result) => result instanceof Promise)) {
-      return runImmediately(async () => {
-        await Promise.all(results);
-      });
+
+      // Track hydration result
+      const hydrationPromise = store.persist.hydrate();
+      if (hydrationPromise instanceof Promise) {
+        hydrationPromises.push(hydrationPromise);
+      }
     }
 
-    return;
+    // Return early if no async operations
+    if (!hydrationPromises.length) return;
+
+    // Handle async hydration
+    return runImmediately(async () => {
+      await Promise.all(hydrationPromises);
+    });
   };
 };
 
-export const Hydrator: React.FC<HydratorProps> = (props) => {
+export const Hydrator: React.FC<HydratorProps> = React.memo((props) => {
   const promiseRef = useRef<void | Promise<void> | null>(undefined);
   const hydrationStateRef = useRef({ isHydrated: false });
 
+  const subscribe = useCallback((onStoreChange: () => void) => {
+    if (!hydrationStateRef.current.isHydrated) {
+      Promise.resolve(promiseRef.current).then(() => {
+        hydrationStateRef.current.isHydrated = true;
+        onStoreChange();
+      });
+    }
+    return () => {};
+  }, []);
+
+  const getSnapshot = useCallback(() => {
+    if (promiseRef.current === undefined) {
+      if (props.handler) {
+        promiseRef.current = props.handler() ?? null;
+      } else {
+        promiseRef.current =
+          runImmediately(setupHydrator(props.stores, props.config)) ?? null;
+      }
+
+      if (!(promiseRef.current instanceof Promise)) {
+        hydrationStateRef.current.isHydrated = true;
+      }
+    }
+
+    return hydrationStateRef.current.isHydrated;
+  }, [props.handler, props.stores, props.config]);
+
   const isHydrated = useSyncExternalStoreWithSelector(
-    (onStoreChange) => {
-      if (!hydrationStateRef.current.isHydrated) {
-        Promise.resolve(promiseRef.current).then(() => {
-          hydrationStateRef.current.isHydrated = true;
-          onStoreChange();
-        });
-      }
-      return () => {};
-    },
-    () => {
-      if (promiseRef.current === undefined) {
-        if (props.handler) {
-          promiseRef.current = props.handler() ?? null;
-        } else {
-          promiseRef.current =
-            runImmediately(setupHydrator(props.stores, props.config)) ?? null;
-        }
-
-        if (!(promiseRef.current instanceof Promise)) {
-          hydrationStateRef.current.isHydrated = true;
-        }
-      }
-
-      return hydrationStateRef.current.isHydrated;
-    },
-    () => hydrationStateRef.current.isHydrated,
+    subscribe,
+    getSnapshot,
+    getSnapshot,
     (state) => state
   );
-  if (!isHydrated) {
-    return <>{props.loadingComponent ?? null}</>;
-  }
 
-  return <>{props.children}</>;
-};
+  return useMemo(() => {
+    if (!isHydrated) {
+      return props.loadingComponent ?? null;
+    }
+    return props.children;
+  }, [isHydrated, props.loadingComponent, props.children]);
+});
 
 export const withHydrator = <P extends Record<string, any>, Ref = unknown>(
   WrappedComponent: WrappedComponentType<React.PropsWithoutRef<P>, Ref>,

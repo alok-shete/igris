@@ -130,12 +130,11 @@ export class PersistHandler<T> {
    */
   public setItem<T>(data: T) {
     clearTimeout(this.timeoutId);
-    this.timeoutId = setTimeout(() => {
+    this.timeoutId = setTimeout(async () => {
       const version = this.config.version;
       const partialData = this.config.partial(data as AnyType);
-
       try {
-        this.storage.setItem(this.key, {
+        await this.storage.setItem(this.key, {
           value: partialData,
           version: version,
         });

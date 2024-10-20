@@ -7,8 +7,8 @@ import { Hydrator, setupHydrator, withHydrator } from "./hydration";
  * Creates a persistence configuration for a store.
  *
  * @template T The type of the store's state
- * @param {Partial<IPersistConfig<T>>} persistConfig The persistence configuration
- * @returns {(storeName: string, store: IgrisMaster<T>) => PersistHandler<T>} A function that creates a PersistHandler
+ * @param persistConfig The persistence configuration
+ * @returns A function that creates a PersistHandler
  */
 const enablePersist =
   <T>(persistConfig: Partial<PersistConfig<T>> = {}) =>

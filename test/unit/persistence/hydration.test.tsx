@@ -18,24 +18,17 @@ describe("setupHydrator", () => {
     vi.clearAllMocks();
   });
 
-  it("should call get method for each store", () => {
+  it("should could not hydrate if persist is undefined", () => {
     const mockStore = {
       get: vi.fn(),
-      persist: {
-        config: {
-          storage: {},
-        },
-        hydrate: vi.fn(),
-      },
+      persist: undefined,
     } as unknown as StoreHook<any, any>;
+    const mockStorageProvider = vi.fn();
     const stores = [mockStore];
 
-    const hydrator = setupHydrator(stores);
+    const hydrator = setupHydrator(stores, { storage: mockStorageProvider });
     hydrator();
-
-    expect(mockStore.get).toHaveBeenCalledTimes(1);
   });
-
   it("should set storage from config if not defined in store", () => {
     const mockStore = {
       get: vi.fn(),
