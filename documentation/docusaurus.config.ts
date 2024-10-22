@@ -69,7 +69,7 @@ const config: Config = {
       title: "Igris",
       logo: {
         alt: "Igris Logo",
-        src: "img/logo.svg",
+        src: "img/igris.png",
       },
       items: [
         {
