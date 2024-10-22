@@ -116,7 +116,7 @@ Creates a new state hook with the given initial value.
 
 ## Advanced Usage
 
-For more advanced usage examples and detailed API documentation, please visit our [GitHub repository](https://github.com/alok-shete/igris).
+For comprehensive usage examples and detailed API documentation, please visit our [official documentation site](https://igris-doc.web.app/).
 
 ## Contributing
 
