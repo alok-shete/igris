@@ -1,7 +1,7 @@
 {
   "name": "igris",
-  "version": "1.0.1",
-  "description": "A small, simple, and type-safe state management solution for React and React Native.",
+  "version": "1.0.2",
+  "description": "A lightweight, type-safe state management solution designed to make React state simple",
   "main": "src/index.ts",
   "homepage": "https://github.com/alok-shete/igris#readme",
   "publishConfig": {
